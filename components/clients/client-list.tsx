@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Search, Plus, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react"
 import { formatDate, formatCurrency } from "@/lib/utils"
+import Link from "next/link"
 
 interface Client {
   id: string
@@ -125,7 +126,7 @@ export function ClientList({
             <div className="text-muted-foreground">
               {searchTerm ? (
                 <>
-                  <p>No clients found matching "{searchTerm}"</p>
+                  <p>No clients found matching &quot;{searchTerm}&quot;</p>
                   <Button variant="link" onClick={() => setSearchTerm("")}>
                     Clear search
                   </Button>
@@ -157,13 +158,14 @@ export function ClientList({
               </TableHeader>
               <TableBody>
                 {filteredClients.map((client) => (
-                  <TableRow
-                    key={client.id}
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => onClientSelect?.(client)}
-                  >
+                  <TableRow key={client.id}>
                     <TableCell className="font-medium">
-                      {client.name}
+                      <Link
+                        href={`/clients/${client.id}`}
+                        className="hover:text-primary transition-colors"
+                      >
+                        {client.name}
+                      </Link>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
@@ -178,7 +180,7 @@ export function ClientList({
                     <TableCell>{client.company || "-"}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">
-                        {client._count.invoices} invoices
+                        {client._count?.invoices || 0} invoices
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
@@ -196,15 +198,12 @@ export function ClientList({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              onClientSelect?.(client)
-                            }}
-                          >
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                          </DropdownMenuItem>
+                          <Link href={`/clients/${client.id}`}>
+                            <DropdownMenuItem>
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
+                            </DropdownMenuItem>
+                          </Link>
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation()

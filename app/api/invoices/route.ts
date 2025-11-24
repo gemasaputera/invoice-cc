@@ -65,8 +65,9 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
 
+    let validatedData
     try {
-      const validatedData = invoiceSchema.parse(body)
+      validatedData = invoiceSchema.parse(body)
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
@@ -74,9 +75,11 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+      return NextResponse.json(
+        { error: 'Validation failed' },
+        { status: 400 }
+      )
     }
-
-    const validatedData = invoiceSchema.parse(body)
 
     // Get user's next invoice number
     const user = await prisma.user.findUnique({
@@ -101,8 +104,8 @@ export async function POST(request: NextRequest) {
           userId: session.user.id,
           clientId: validatedData.clientId,
           invoiceNumber,
-          issueDate: validatedData.issueDate,
-          dueDate: validatedData.dueDate,
+          issueDate: new Date(validatedData.issueDate),
+          dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
           notes: validatedData.notes,
           subtotal,
           taxRate: validatedData.taxRate,

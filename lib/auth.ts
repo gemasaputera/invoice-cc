@@ -19,6 +19,18 @@ export const auth = betterAuth({
       enabled: true,
       maxAge: 5 * 60, // 5 minutes
     },
+    modelName: "session",
+    fields: {
+      sessionToken: "sessionToken",
+      token: "token",
+      userId: "userId",
+      expires: "expires",
+      expiresAt: "expiresAt",
+      ipAddress: "ipAddress",
+      userAgent: "userAgent",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+    },
   },
   account: {
     accountLinking: {

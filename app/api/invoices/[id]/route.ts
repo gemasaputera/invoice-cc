@@ -8,9 +8,10 @@ import { calculateInvoiceTotal } from '@/lib/utils'
 // GET /api/invoices/[id] - Get a specific invoice
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth.api.getSession({
       headers: request.headers,
     })
@@ -21,7 +22,7 @@ export async function GET(
 
     const invoice = await prisma.invoice.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
       include: {
@@ -58,9 +59,10 @@ export async function GET(
 // PUT /api/invoices/[id] - Update an invoice
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth.api.getSession({
       headers: request.headers,
     })
@@ -87,7 +89,7 @@ export async function PUT(
     // Check if invoice exists and belongs to user
     const existingInvoice = await prisma.invoice.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
     })
@@ -111,13 +113,13 @@ export async function PUT(
     const result = await prisma.$transaction(async (tx) => {
       // Delete existing items
       await tx.invoiceItem.deleteMany({
-        where: { invoiceId: params.id },
+        where: { invoiceId: id },
       })
 
       // Create new items
       await tx.invoiceItem.createMany({
         data: validatedData.items.map((item) => ({
-          invoiceId: params.id,
+          invoiceId: id,
           description: item.description,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
@@ -127,7 +129,7 @@ export async function PUT(
 
       // Update invoice
       const updatedInvoice = await tx.invoice.update({
-        where: { id: params.id },
+        where: { id: id },
         data: {
           clientId: validatedData.clientId,
           issueDate: validatedData.issueDate,
@@ -165,9 +167,10 @@ export async function PUT(
 // DELETE /api/invoices/[id] - Delete an invoice
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth.api.getSession({
       headers: request.headers,
     })
@@ -179,7 +182,7 @@ export async function DELETE(
     // Check if invoice exists and belongs to user
     const existingInvoice = await prisma.invoice.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
     })
@@ -198,7 +201,7 @@ export async function DELETE(
 
     // Delete invoice (items will be deleted due to cascade)
     await prisma.invoice.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ message: 'Invoice deleted successfully' })

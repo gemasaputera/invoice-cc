@@ -7,9 +7,10 @@ import { z } from 'zod'
 // GET /api/clients/[id] - Get a specific client
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth.api.getSession({
       headers: request.headers,
     })
@@ -20,21 +21,13 @@ export async function GET(
 
     const client = await prisma.client.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
       include: {
-        invoices: {
+        _count: {
           select: {
-            id: true,
-            invoiceNumber: true,
-            total: true,
-            status: true,
-            issueDate: true,
-            dueDate: true,
-          },
-          orderBy: {
-            createdAt: 'desc',
+            invoices: true,
           },
         },
       },
@@ -57,9 +50,10 @@ export async function GET(
 // PUT /api/clients/[id] - Update a client
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth.api.getSession({
       headers: request.headers,
     })
@@ -85,7 +79,7 @@ export async function PUT(
 
     const client = await prisma.client.updateMany({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
       data: validatedData,
@@ -96,7 +90,7 @@ export async function PUT(
     }
 
     const updatedClient = await prisma.client.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json(updatedClient)
@@ -112,9 +106,10 @@ export async function PUT(
 // DELETE /api/clients/[id] - Delete a client
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth.api.getSession({
       headers: request.headers,
     })
@@ -126,7 +121,7 @@ export async function DELETE(
     // Check if client has invoices before deleting
     const clientWithInvoices = await prisma.client.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
       include: {
@@ -151,7 +146,7 @@ export async function DELETE(
 
     await prisma.client.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     })
 

@@ -16,7 +16,9 @@
       "Bash(curl:*)",
       "Bash(node:*)",
       "Bash(npm search better-auth)",
-      "Bash(npx prisma db push:*)"
+      "Bash(npx prisma db push:*)",
+      "WebSearch",
+      "Bash(npx prisma db pull:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

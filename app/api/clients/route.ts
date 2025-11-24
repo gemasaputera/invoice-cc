@@ -19,10 +19,20 @@ export async function GET(request: NextRequest) {
       where: {
         userId: session.user.id,
       },
+      include: {
+        _count: {
+          select: {
+            invoices: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: 'desc',
       },
     })
+
+    console.log('Clients found:', clients.length, 'for user:', session.user.id)
+    console.log('Client IDs:', clients.map(c => ({ id: c.id, name: c.name })))
 
     return NextResponse.json(clients)
   } catch (error) {

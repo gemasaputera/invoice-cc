@@ -10,9 +10,10 @@ const statusSchema = z.object({
 // PATCH /api/invoices/[id]/status - Update invoice status
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth.api.getSession({
       headers: request.headers,
     })
@@ -39,7 +40,7 @@ export async function PATCH(
     // Check if invoice exists and belongs to user
     const existingInvoice = await prisma.invoice.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
     })
@@ -50,7 +51,7 @@ export async function PATCH(
 
     // Update invoice status
     const updatedInvoice = await prisma.invoice.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: validatedData.status,
       },

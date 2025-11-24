@@ -8,23 +8,13 @@ import {
   Image,
 } from '@react-pdf/renderer'
 
-// Register a font (optional, but recommended for better PDF appearance)
-Font.register({
-  family: 'Roboto',
-  src: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
-})
-
-Font.register({
-  family: 'Roboto',
-  src: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Bold.ttf',
-  fontWeight: 700,
-})
+// Use system fonts for better compatibility
 
 const styles = StyleSheet.create({
   page: {
     padding: 30,
     fontSize: 12,
-    fontFamily: 'Roboto',
+    fontFamily: 'Helvetica',
     color: '#333',
   },
   header: {

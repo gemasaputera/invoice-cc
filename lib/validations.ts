@@ -11,8 +11,8 @@ export const clientSchema = z.object({
 
 export const invoiceSchema = z.object({
   clientId: z.string().min(1, "Please select a client"),
-  issueDate: z.date(),
-  dueDate: z.date().optional(),
+  issueDate: z.string().or(z.date()),
+  dueDate: z.string().or(z.date()).optional(),
   notes: z.string().optional(),
   taxRate: z.number().min(0).max(100).default(0),
   items: z.array(z.object({
