@@ -21,7 +21,7 @@ export const auth = betterAuth({
     },
     modelName: "session",
     fields: {
-      sessionToken: "sessionToken",
+      sessionToken: "token",
       token: "token",
       userId: "userId",
       expires: "expires",
@@ -82,6 +82,10 @@ export const auth = betterAuth({
         required: false,
       },
       taxId: {
+        type: "string",
+        required: false,
+      },
+      defaultCurrency: {
         type: "string",
         required: false,
       },

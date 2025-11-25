@@ -9,6 +9,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   Table,
   TableBody,
   TableCell,
@@ -16,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ArrowLeft, Edit, Download, Send, FileText } from "lucide-react"
+import { ArrowLeft, Edit, Download, Send, FileText, MoreHorizontal, CheckCircle, DollarSign, AlertCircle, XCircle } from "lucide-react"
 import { formatDate, formatCurrency } from "@/lib/utils"
 import { toast } from "sonner"
 
@@ -121,7 +127,7 @@ export default function InvoiceDetailPage() {
     }
   }
 
-  const handleMarkAsSent = async () => {
+  const updateInvoiceStatus = async (newStatus: string) => {
     if (!invoice) return
 
     try {
@@ -130,11 +136,11 @@ export default function InvoiceDetailPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: "SENT" }),
+        body: JSON.stringify({ status: newStatus }),
       })
 
       if (response.ok) {
-        toast.success(`Invoice #${invoice.invoiceNumber} marked as sent`)
+        toast.success(`Invoice #${invoice.invoiceNumber} marked as ${newStatus}`)
         fetchInvoice() // Refresh the invoice data
       } else {
         const error = await response.json()
@@ -144,6 +150,10 @@ export default function InvoiceDetailPage() {
       console.error("Error updating invoice status:", error)
       toast.error("Failed to update invoice status")
     }
+  }
+
+  const handleMarkAsSent = () => {
+    updateInvoiceStatus("SENT")
   }
 
   const getStatusColor = (status: string) => {
@@ -213,16 +223,55 @@ export default function InvoiceDetailPage() {
             </div>
 
             <div className="flex items-center space-x-2">
-              {invoice.status === "DRAFT" && (
-                <Button variant="outline" onClick={handleMarkAsSent}>
-                  <Send className="mr-2 h-4 w-4" />
-                  Mark as Sent
-                </Button>
+              {/* Status Update Dropdown */}
+              {(invoice.status === "DRAFT" || invoice.status === "SENT" || invoice.status === "OVERDUE") && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      <MoreHorizontal className="mr-2 h-4 w-4" />
+                      Update Status
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {invoice.status === "DRAFT" && (
+                      <DropdownMenuItem onClick={() => updateInvoiceStatus("SENT")}>
+                        <Send className="mr-2 h-4 w-4" />
+                        Mark as Sent
+                      </DropdownMenuItem>
+                    )}
+                    {invoice.status === "DRAFT" && (
+                      <DropdownMenuItem onClick={() => updateInvoiceStatus("CANCELLED")}>
+                        <XCircle className="mr-2 h-4 w-4" />
+                        Cancel Invoice
+                      </DropdownMenuItem>
+                    )}
+                    {(invoice.status === "SENT" || invoice.status === "OVERDUE") && (
+                      <DropdownMenuItem onClick={() => updateInvoiceStatus("PAID")}>
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Mark as Paid
+                      </DropdownMenuItem>
+                    )}
+                    {(invoice.status === "SENT" || invoice.status === "OVERDUE") && (
+                      <DropdownMenuItem onClick={() => updateInvoiceStatus("OVERDUE")}>
+                        <AlertCircle className="mr-2 h-4 w-4" />
+                        Mark as Overdue
+                      </DropdownMenuItem>
+                    )}
+                    {(invoice.status === "SENT" || invoice.status === "OVERDUE") && (
+                      <DropdownMenuItem onClick={() => updateInvoiceStatus("CANCELLED")}>
+                        <XCircle className="mr-2 h-4 w-4" />
+                        Cancel Invoice
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
+
               <Button variant="outline" onClick={handleDownload}>
                 <Download className="mr-2 h-4 w-4" />
                 Download PDF
               </Button>
+
               {invoice.status === "DRAFT" && (
                 <Button
                   onClick={() => router.push(`/invoices/${invoice.id}/edit`)}

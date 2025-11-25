@@ -7,6 +7,7 @@ import {
   Font,
   Image,
 } from '@react-pdf/renderer'
+import { SUPPORTED_CURRENCIES } from '@/lib/validations'
 
 // Use system fonts for better compatibility
 
@@ -23,6 +24,21 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e5e5e5',
     borderBottomStyle: 'solid',
     paddingBottom: 20,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  logo: {
+    maxHeight: 60,
+    maxWidth: 200,
+    marginBottom: 10,
+  },
+  titleSection: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   title: {
     fontSize: 24,
@@ -192,10 +208,42 @@ export function InvoicePDF({ invoice, client, user, items }: InvoicePDFProps) {
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: invoice.currency || 'USD',
-    }).format(amount)
+    const currency = invoice.currency || 'IDR'
+    const currencyConfig = SUPPORTED_CURRENCIES.find(c => c.value === currency)
+
+    if (!currencyConfig) {
+      // Fallback for unsupported currencies
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(amount)
+    }
+
+    // Special formatting for currencies that don't use decimals
+    if (['IDR', 'VND', 'JPY'].includes(currencyConfig.value)) {
+      const numAmount = Number(amount)
+      return `${currencyConfig.symbol}${numAmount.toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`
+    }
+
+    // For currencies with standard decimal formatting, use Intl.NumberFormat
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currencyConfig.value,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(Number(amount))
+    } catch {
+      // Final fallback - use symbol with basic formatting
+      const numAmount = Number(amount)
+      return `${currencyConfig.symbol}${numAmount.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`
+    }
   }
 
   return (
@@ -203,14 +251,27 @@ export function InvoicePDF({ invoice, client, user, items }: InvoicePDFProps) {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>INVOICE</Text>
-          <View style={styles.invoiceInfo}>
-            <Text>Invoice #: {invoice.invoiceNumber}</Text>
-            <Text>Status: {invoice.status}</Text>
-            <Text>Issue Date: {formatDate(invoice.issueDate)}</Text>
-            {invoice.dueDate && (
-              <Text>Due Date: {formatDate(invoice.dueDate)}</Text>
+          <View style={styles.headerContent}>
+            {/* Logo Section */}
+            {user.logoUrl && (
+              <Image
+                src={user.logoUrl}
+                style={styles.logo}
+              />
             )}
+
+            {/* Title and Invoice Info Section */}
+            <View style={styles.titleSection}>
+              <Text style={styles.title}>INVOICE</Text>
+              <View style={styles.invoiceInfo}>
+                <Text>Invoice #: {invoice.invoiceNumber}</Text>
+                <Text>Status: {invoice.status}</Text>
+                <Text>Issue Date: {formatDate(invoice.issueDate)}</Text>
+                {invoice.dueDate && (
+                  <Text>Due Date: {formatDate(invoice.dueDate)}</Text>
+                )}
+              </View>
+            </View>
           </View>
         </View>
 

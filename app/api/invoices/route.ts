@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const clientId = searchParams.get('clientId')
+    const limit = searchParams.get('limit')
 
     const invoices = await prisma.invoice.findMany({
       where: {
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest) {
       orderBy: {
         createdAt: 'desc',
       },
+      ...(limit && { take: parseInt(limit) }),
     })
 
     return NextResponse.json(invoices)
@@ -71,7 +73,7 @@ export async function POST(request: NextRequest) {
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
-          { error: 'Validation failed', details: validationError.errors },
+          { error: 'Validation failed', details: validationError.issues },
           { status: 400 }
         )
       }
@@ -81,10 +83,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get user's next invoice number
+    // Get user's settings for invoice creation
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { nextInvoiceNum: true, invoicePrefix: true }
+      select: { nextInvoiceNum: true, invoicePrefix: true, defaultCurrency: true }
     })
 
     if (!user) {
@@ -111,6 +113,7 @@ export async function POST(request: NextRequest) {
           taxRate: validatedData.taxRate,
           taxAmount,
           total,
+          currency: user.defaultCurrency || 'IDR',
           status: 'DRAFT',
         },
       })

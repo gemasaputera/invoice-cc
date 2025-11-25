@@ -25,8 +25,10 @@ export async function GET(request: NextRequest) {
         phone: true,
         address: true,
         taxId: true,
+        defaultCurrency: true,
         invoicePrefix: true,
         nextInvoiceNum: true,
+        logoUrl: true,
       },
     })
 
@@ -62,7 +64,7 @@ export async function PUT(request: NextRequest) {
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
-          { error: 'Validation failed', details: validationError.errors },
+          { error: 'Validation failed', details: validationError.issues },
           { status: 400 }
         )
       }
@@ -81,8 +83,10 @@ export async function PUT(request: NextRequest) {
         phone: true,
         address: true,
         taxId: true,
+        defaultCurrency: true,
         invoicePrefix: true,
         nextInvoiceNum: true,
+        logoUrl: true,
       },
     })
 

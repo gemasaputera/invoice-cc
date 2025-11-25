@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { AppLayout } from "@/components/layout/app-layout"
 import { AuthGuard } from "@/components/auth/auth-guard"
 import { ClientList } from "@/components/clients/client-list"
@@ -24,6 +25,7 @@ interface Client {
 }
 
 export default function ClientsPage() {
+  const router = useRouter()
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
@@ -91,8 +93,7 @@ export default function ClientsPage() {
   }
 
   const handleClientSelect = (client: Client) => {
-    // For now, just show a message. In the future, this could navigate to client details
-    toast.info(`Selected client: ${client.name}`)
+    router.push(`/clients/${client.id}`)
   }
 
   return (

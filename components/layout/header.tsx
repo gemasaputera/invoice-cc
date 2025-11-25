@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Search, Bell, Menu } from "lucide-react"
+import { Menu } from "lucide-react"
 import { useSession, signOut } from "@/lib/auth-client"
 import {
   DropdownMenu,
@@ -11,32 +11,67 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { MobileSidebar } from "./sidebar"
+import Link from "next/link"
+import { useState, useEffect } from "react"
 
 export function Header() {
   const { data: session } = useSession()
+  const [isDarkMode, setIsDarkMode] = useState(false)
+
+  useEffect(() => {
+    // Check for system preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const savedTheme = localStorage.getItem('theme')
+
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === 'dark')
+    } else {
+      setIsDarkMode(prefersDark)
+    }
+  }, [])
+
+  const toggleDarkMode = () => {
+    const newTheme = !isDarkMode
+    setIsDarkMode(newTheme)
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light')
+
+    // Apply theme to document
+    if (newTheme) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
-        </Button>
+        <MobileSidebar>
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+        </MobileSidebar>
 
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search invoices..."
-                className="pl-8 h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-              />
-            </div>
-          </div>
+        <div className="flex-1 md:flex-none md:w-20">
+          <Link href="/dashboard" className="flex items-center gap-2 font-semibold md:hidden">
+            <span className="">InvoiceHub</span>
+          </Link>
+        </div>
 
+        <div className="flex flex-1 items-center justify-end pr-4 md:pr-0">
           <nav className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-4 w-4" />
+            {/* Dark Mode Toggle - Only icon button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleDarkMode}
+              className="h-8 w-8"
+              title="Toggle dark mode"
+            >
+              {isDarkMode ? "🌙" : "☀️"}
+              <span className="sr-only">Toggle dark mode</span>
             </Button>
 
             <DropdownMenu>
@@ -64,7 +99,12 @@ export function Header() {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem onClick={toggleDarkMode}>
+                  {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">Settings</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

@@ -29,7 +29,7 @@ export async function PATCH(
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
-          { error: 'Validation failed', details: validationError.errors },
+          { error: 'Validation failed', details: validationError.issues },
           { status: 400 }
         )
       }
@@ -49,19 +49,54 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
     }
 
+    // Define allowed status transitions
+    const allowedTransitions: Record<string, string[]> = {
+      'DRAFT': ['SENT', 'CANCELLED'],
+      'SENT': ['PAID', 'OVERDUE', 'CANCELLED'],
+      'PAID': [], // Paid invoices cannot be changed
+      'OVERDUE': ['PAID', 'CANCELLED'],
+      'CANCELLED': ['DRAFT'], // Allow reactivating cancelled invoices as drafts
+    }
+
+    const currentStatus = existingInvoice.status
+    const requestedStatus = validatedData.status
+
+    // Check if the transition is allowed
+    if (!allowedTransitions[currentStatus]?.includes(requestedStatus)) {
+      const allowedStatuses = allowedTransitions[currentStatus] || []
+      return NextResponse.json(
+        {
+          error: `Cannot change invoice status from ${currentStatus} to ${requestedStatus}`,
+          allowedTransitions: allowedStatuses.length > 0 ? allowedStatuses : ['No changes allowed']
+        },
+        { status: 400 }
+      )
+    }
+
     // Update invoice status
     const updatedInvoice = await prisma.invoice.update({
       where: { id: id },
       data: {
-        status: validatedData.status,
+        status: requestedStatus,
+        updatedAt: new Date(),
       },
       include: {
-        client: true,
+        client: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            company: true,
+          },
+        },
         items: true,
       },
     })
 
-    return NextResponse.json(updatedInvoice)
+    return NextResponse.json({
+      message: `Invoice status updated to ${requestedStatus}`,
+      invoice: updatedInvoice
+    })
   } catch (error) {
     console.error('Error updating invoice status:', error)
     return NextResponse.json(

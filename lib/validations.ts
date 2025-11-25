@@ -22,6 +22,26 @@ export const invoiceSchema = z.object({
   })).min(1, "At least one item is required"),
 })
 
+// Supported currencies list
+export const SUPPORTED_CURRENCIES = [
+  { value: "IDR", label: "IDR - Indonesian Rupiah (Rp)", symbol: "Rp" },
+  { value: "USD", label: "USD - US Dollar ($)", symbol: "$" },
+  { value: "EUR", label: "EUR - Euro (€)", symbol: "€" },
+  { value: "GBP", label: "GBP - British Pound (£)", symbol: "£" },
+  { value: "JPY", label: "JPY - Japanese Yen (¥)", symbol: "¥" },
+  { value: "CNY", label: "CNY - Chinese Yuan (¥)", symbol: "¥" },
+  { value: "SGD", label: "SGD - Singapore Dollar ($)", symbol: "$" },
+  { value: "MYR", label: "MYR - Malaysian Ringgit (RM)", symbol: "RM" },
+  { value: "THB", label: "THB - Thai Baht (฿)", symbol: "฿" },
+  { value: "VND", label: "VND - Vietnamese Dong (₫)", symbol: "₫" },
+  { value: "PHP", label: "PHP - Philippine Peso (₱)", symbol: "₱" },
+  { value: "HKD", label: "HKD - Hong Kong Dollar ($)", symbol: "$" },
+  { value: "AUD", label: "AUD - Australian Dollar ($)", symbol: "$" },
+  { value: "CAD", label: "CAD - Canadian Dollar ($)", symbol: "$" },
+  { value: "CHF", label: "CHF - Swiss Franc (Fr)", symbol: "Fr" },
+  { value: "INR", label: "INR - Indian Rupee (₹)", symbol: "₹" },
+] as const
+
 export const userSettingsSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   businessName: z.string().optional(),
@@ -29,6 +49,7 @@ export const userSettingsSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   taxId: z.string().optional(),
+  defaultCurrency: z.enum(SUPPORTED_CURRENCIES.map(c => c.value) as [string, ...string[]]).default("IDR"),
   invoicePrefix: z.string().max(3, "Prefix must be 3 characters or less").default("INV"),
 })
 

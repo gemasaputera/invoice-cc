@@ -18,7 +18,17 @@
       "Bash(npm search better-auth)",
       "Bash(npx prisma db push:*)",
       "WebSearch",
-      "Bash(npx prisma db pull:*)"
+      "Bash(npx prisma db pull:*)",
+      "mcp__neon__list_projects",
+      "mcp__neon__get_database_tables",
+      "mcp__neon__describe_table_schema",
+      "mcp__neon__run_sql",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 15s npm run dev:*)",
+      "Bash(lsof:*)",
+      "WebFetch(domain:developers.cloudflare.com)"
     ]
   },
   "enableAllProjectMcpServers": true,

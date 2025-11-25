@@ -9,7 +9,7 @@ export default function TestAuth() {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [session, setSession] = useState(null)
+  const [session, setSession] = useState<any>(null)
 
   const testSignup = async () => {
     setLoading(true)
@@ -27,7 +27,7 @@ export default function TestAuth() {
         setMessage('❌ Signup failed: ' + JSON.stringify(result.error))
       }
     } catch (error) {
-      setMessage('❌ Error: ' + error.message)
+      setMessage('❌ Error: ' + (error instanceof Error ? error.message : 'Unknown error'))
       console.error('Signup error:', error)
     }
     setLoading(false)
@@ -48,7 +48,7 @@ export default function TestAuth() {
         setMessage('❌ Signin failed: ' + JSON.stringify(result.error))
       }
     } catch (error) {
-      setMessage('❌ Error: ' + error.message)
+      setMessage('❌ Error: ' + (error instanceof Error ? error.message : 'Unknown error'))
       console.error('Signin error:', error)
     }
     setLoading(false)
@@ -60,7 +60,7 @@ export default function TestAuth() {
       setSession(sessionData)
       setMessage(sessionData ? '✅ Session found!' : '❌ No session')
     } catch (error) {
-      setMessage('❌ Session error: ' + error.message)
+      setMessage('❌ Session error: ' + (error instanceof Error ? error.message : 'Unknown error'))
     }
   }
 
@@ -76,7 +76,7 @@ export default function TestAuth() {
         setMessage('❌ Signout failed: ' + JSON.stringify(result.error))
       }
     } catch (error) {
-      setMessage('❌ Error: ' + error.message)
+      setMessage('❌ Error: ' + (error instanceof Error ? error.message : 'Unknown error'))
     }
     setLoading(false)
   }

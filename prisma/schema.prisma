@@ -41,11 +41,11 @@ model Account {
 
 model Session {
   id           String    @id @default(cuid())
+  token        String    @unique
   sessionToken String?   @unique
-  token        String?   @unique
   userId       String
   expires      DateTime?
-  expiresAt    DateTime?
+  expiresAt    DateTime  @default(dbgenerated("(now() + interval '7 days')"))
   ipAddress    String?
   userAgent    String?
   createdAt    DateTime  @default(now())
@@ -73,8 +73,10 @@ model User {
   phone           String?
   address         String?
   taxId           String?
+  defaultCurrency String?   @default("IDR")
   invoicePrefix   String?   @default("INV")
   nextInvoiceNum  Int       @default(1)
+  logoUrl         String?
 
   invoices        Invoice[]
   clients         Client[]
