@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
     color: '#374151',
   },
   table: {
-    display: 'table',
     width: 'auto',
     marginBottom: 20,
   },
@@ -90,7 +89,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   itemsTable: {
-    display: 'table',
     width: 'auto',
     marginBottom: 20,
   },

@@ -70,16 +70,17 @@ export function UserSettingsForm({ onSubmit }: UserSettingsFormProps) {
         console.error("Failed to fetch user settings")
         // Fall back to session data if API fails
         if (session?.user) {
-          setLogoUrl(session.user.logoUrl || null)
+          const user = session.user as any
+          setLogoUrl(user.logoUrl || null)
           form.reset({
-            name: session.user.name || "",
-            businessName: session.user.businessName || "",
-            email: session.user.email || "",
-            phone: session.user.phone || "",
-            address: session.user.address || "",
-            taxId: session.user.taxId || "",
-            defaultCurrency: session.user.defaultCurrency || "IDR",
-            invoicePrefix: session.user.invoicePrefix || "INV",
+            name: user.name || "",
+            businessName: user.businessName || "",
+            email: user.email || "",
+            phone: user.phone || "",
+            address: user.address || "",
+            taxId: user.taxId || "",
+            defaultCurrency: user.defaultCurrency || "IDR",
+            invoicePrefix: user.invoicePrefix || "INV",
           })
         }
       }

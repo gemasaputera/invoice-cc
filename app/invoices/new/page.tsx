@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { AppLayout } from "@/components/layout/app-layout"
 import { AuthGuard } from "@/components/auth/auth-guard"
 import { InvoiceForm } from "@/components/forms/invoice-form"
@@ -8,7 +8,7 @@ import { InvoiceFormData } from "@/lib/validations"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
-export default function NewInvoicePage() {
+function NewInvoiceContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
@@ -46,20 +46,35 @@ export default function NewInvoicePage() {
   }
 
   return (
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">Create New Invoice</h2>
+      </div>
+
+      <InvoiceForm
+        onSubmit={handleInvoiceSubmit}
+        onCancel={handleCancel}
+        isLoading={isLoading}
+        clientId={clientId || undefined}
+      />
+    </div>
+  )
+}
+
+export default function NewInvoicePage() {
+  return (
     <AuthGuard>
       <AppLayout>
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">Create New Invoice</h2>
+        <Suspense fallback={
+          <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+            <div className="flex items-center justify-between space-y-2">
+              <h2 className="text-3xl font-bold tracking-tight">Create New Invoice</h2>
+            </div>
+            <div>Loading...</div>
           </div>
-
-          <InvoiceForm
-            onSubmit={handleInvoiceSubmit}
-            onCancel={handleCancel}
-            isLoading={isLoading}
-            clientId={clientId || undefined}
-          />
-        </div>
+        }>
+          <NewInvoiceContent />
+        </Suspense>
       </AppLayout>
     </AuthGuard>
   )

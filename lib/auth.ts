@@ -97,6 +97,10 @@ export const auth = betterAuth({
         type: "number",
         required: false,
       },
+      logoUrl: {
+        type: "string",
+        required: false,
+      },
     },
   },
 })

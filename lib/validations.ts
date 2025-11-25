@@ -14,7 +14,7 @@ export const invoiceSchema = z.object({
   issueDate: z.string().or(z.date()),
   dueDate: z.string().or(z.date()).optional(),
   notes: z.string().optional(),
-  taxRate: z.number().min(0).max(100).default(0),
+  taxRate: z.number().min(0).max(100),
   items: z.array(z.object({
     description: z.string().min(1, "Description is required"),
     quantity: z.number().min(1, "Quantity must be at least 1"),
@@ -49,8 +49,8 @@ export const userSettingsSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   taxId: z.string().optional(),
-  defaultCurrency: z.enum(SUPPORTED_CURRENCIES.map(c => c.value) as [string, ...string[]]).default("IDR"),
-  invoicePrefix: z.string().max(3, "Prefix must be 3 characters or less").default("INV"),
+  defaultCurrency: z.enum(SUPPORTED_CURRENCIES.map(c => c.value) as [string, ...string[]]),
+  invoicePrefix: z.string().max(3, "Prefix must be 3 characters or less"),
 })
 
 export const authSchema = z.object({
