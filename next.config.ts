@@ -3,7 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ["files.gemasaputera.id"],
+    remotePatterns: [{
+      protocol: 'https',
+      hostname: 'files.gemasaputera.id',
+      port: '',
+      pathname: '/**',
+    }],
   },
 };
 
