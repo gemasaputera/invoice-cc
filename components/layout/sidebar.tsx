@@ -1,14 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import {
   LayoutDashboard,
   FileText,
   Users,
   Settings,
-  Plus,
   X
 } from "lucide-react"
 import Link from "next/link"
@@ -63,7 +61,7 @@ function SidebarContent({ mobile = false, onClose }: SidebarProps) {
                   isActive ? 'bg-muted text-primary' : ''
                 }`}
               >
-                <item.icon className="h-4 w-4 flex-shrink-0" />
+                <item.icon className="h-4 w-4 shrink-0" />
                 <span className="truncate">{item.name}</span>
               </Link>
             )

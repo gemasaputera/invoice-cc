@@ -1,10 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import {
   Document,
   Page,
   Text,
   View,
   StyleSheet,
-  Font,
   Image,
 } from '@react-pdf/renderer'
 import { SUPPORTED_CURRENCIES } from '@/lib/validations'
@@ -243,6 +243,7 @@ export function InvoicePDF({ invoice, client, user, items }: InvoicePDFProps) {
       })}`
     }
   }
+  console.log('user.logoUrl', user.logoUrl)
 
   return (
     <Document>
@@ -252,10 +253,10 @@ export function InvoicePDF({ invoice, client, user, items }: InvoicePDFProps) {
           <View style={styles.headerContent}>
             {/* Logo Section */}
             {user.logoUrl && (
-              <Image
-                src={user.logoUrl}
-                style={styles.logo}
-              />
+                <Image
+                  src={user.logoUrl}
+                  style={styles.logo}
+                />
             )}
 
             {/* Title and Invoice Info Section */}

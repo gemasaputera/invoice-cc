@@ -24,7 +24,7 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
 
       // Client-side validation
       const maxSize = 2 * 1024 * 1024 // 2MB
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/svg+xml']
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
 
       if (file.size > maxSize) {
         toast.error('File size must be less than 2MB')
@@ -32,7 +32,7 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
       }
 
       if (!allowedTypes.includes(file.type)) {
-        toast.error('Only PNG, JPG, and SVG files are allowed')
+        toast.error('Only PNG and JPG files are allowed')
         return
       }
 
@@ -104,7 +104,6 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
     accept: {
       'image/png': ['.png'],
       'image/jpeg': ['.jpg', '.jpeg'],
-      'image/svg+xml': ['.svg'],
     },
     maxSize: 2 * 1024 * 1024, // 2MB
     multiple: false,
@@ -119,7 +118,7 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
             <h3 className="text-lg font-medium">Business Logo</h3>
             <p className="text-sm text-muted-foreground">
               Upload your business logo to appear on invoices. Maximum size: 2MB.
-              Recommended dimensions: 400x200px. Formats: PNG, JPG, SVG.
+              Recommended dimensions: 400x200px. Formats: PNG, JPG.
             </p>
           </div>
 
@@ -179,7 +178,7 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
                         <ImageIcon className="h-8 w-8 text-muted-foreground" />
                         <p className="text-sm font-medium">Click to upload or drag and drop</p>
                         <p className="text-xs text-muted-foreground">
-                          PNG, JPG, SVG up to 2MB
+                          PNG, JPG up to 2MB
                         </p>
                       </>
                     )}

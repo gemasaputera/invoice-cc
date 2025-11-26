@@ -204,8 +204,8 @@ export default function InvoiceDetailPage() {
     <AuthGuard>
       <AppLayout>
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2">
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-2">
+            <div className="flex flex-col md:flex-row justify-start w-full items-start md:items-center space-x-2">
               <Button
                 variant="ghost"
                 size="sm"

@@ -37,27 +37,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate file type (only PNG and JPG allowed)
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json(
+        { error: 'Only PNG and JPG files are allowed' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (2MB max)
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: 'File size must be less than 2MB' },
+        { status: 400 }
+      );
+    }
+
     // Additional server-side validation for image dimensions
     try {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Skip dimension check for SVG files
-      if (file.type !== 'image/svg+xml') {
-        const metadata = await sharp(buffer).metadata();
+      const metadata = await sharp(buffer).metadata();
 
-        if (metadata.width && metadata.height) {
-          const maxWidth = 400;
-          const maxHeight = 200;
+      if (metadata.width && metadata.height) {
+        const maxWidth = 1000;
+        const maxHeight = 1000;
 
-          if (metadata.width > maxWidth || metadata.height > maxHeight) {
-            return NextResponse.json(
-              {
-                error: `Image dimensions must be ${maxWidth}x${maxHeight} pixels or smaller. Current: ${metadata.width}x${metadata.height}`
-              },
-              { status: 400 }
-            );
-          }
+        if (metadata.width > maxWidth || metadata.height > maxHeight) {
+          return NextResponse.json(
+            {
+              error: `Image dimensions must be ${maxWidth}x${maxHeight} pixels or smaller. Current: ${metadata.width}x${metadata.height}`
+            },
+            { status: 400 }
+          );
         }
       }
     } catch (imageError) {
