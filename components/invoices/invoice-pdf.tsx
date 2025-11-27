@@ -8,6 +8,7 @@ import {
   Image,
 } from '@react-pdf/renderer'
 import { SUPPORTED_CURRENCIES } from '@/lib/validations'
+import { InvoicePDFProps } from '@/lib/pdf-types'
 
 // Use system fonts for better compatibility
 
@@ -188,12 +189,7 @@ const styles = StyleSheet.create({
   },
 })
 
-interface InvoicePDFProps {
-  invoice: any
-  client: any
-  user: any
-  items: any[]
-}
+// Props interface is now imported from @/lib/pdf-types
 
 export function InvoicePDF({ invoice, client, user, items }: InvoicePDFProps) {
   const formatDate = (dateString: string) => {
@@ -265,9 +261,9 @@ export function InvoicePDF({ invoice, client, user, items }: InvoicePDFProps) {
               <View style={styles.invoiceInfo}>
                 <Text>Invoice #: {invoice.invoiceNumber}</Text>
                 <Text>Status: {invoice.status}</Text>
-                <Text>Issue Date: {formatDate(invoice.issueDate)}</Text>
+                <Text>Issue Date: {formatDate(invoice.issueDate as string)}</Text>
                 {invoice.dueDate && (
-                  <Text>Due Date: {formatDate(invoice.dueDate)}</Text>
+                  <Text>Due Date: {formatDate(invoice.dueDate as string)}</Text>
                 )}
               </View>
             </View>

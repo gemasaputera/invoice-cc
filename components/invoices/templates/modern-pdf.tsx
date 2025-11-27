@@ -8,6 +8,8 @@ import {
   Image,
 } from '@react-pdf/renderer'
 
+import { InvoicePDFProps } from '@/lib/pdf-types'
+
 // Modern template styles with rounded corners and modern colors
 const styles = StyleSheet.create({
   page: {
@@ -196,14 +198,7 @@ const styles = StyleSheet.create({
   },
 })
 
-interface ModernPDFProps {
-  invoice: any
-  client: any
-  user: any
-  items: any[]
-}
-
-export function ModernPDF({ invoice, client, user, items }: ModernPDFProps) {
+export function ModernPDF({ invoice, client, user, items }: InvoicePDFProps) {
   const formatCurrency = (amount: string | number) => {
     const num = typeof amount === 'string' ? parseFloat(amount) : amount
     return new Intl.NumberFormat('en-US', {

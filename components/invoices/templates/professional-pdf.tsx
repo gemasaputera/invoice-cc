@@ -8,6 +8,8 @@ import {
   Image,
 } from '@react-pdf/renderer'
 
+import { InvoicePDFProps } from '@/lib/pdf-types'
+
 // Professional template with traditional styling
 const styles = StyleSheet.create({
   page: {
@@ -247,14 +249,7 @@ const styles = StyleSheet.create({
   },
 })
 
-interface ProfessionalPDFProps {
-  invoice: any
-  client: any
-  user: any
-  items: any[]
-}
-
-export function ProfessionalPDF({ invoice, client, user, items }: ProfessionalPDFProps) {
+export function ProfessionalPDF({ invoice, client, user, items }: InvoicePDFProps) {
   const formatCurrency = (amount: string | number) => {
     const num = typeof amount === 'string' ? parseFloat(amount) : amount
     return new Intl.NumberFormat('en-US', {
@@ -299,9 +294,9 @@ export function ProfessionalPDF({ invoice, client, user, items }: ProfessionalPD
               <View style={styles.invoiceInfo}>
                 <Text>Invoice No: {invoice.invoiceNumber}</Text>
                 <Text>Status: {invoice.status}</Text>
-                <Text>Date: {formatDate(invoice.issueDate)}</Text>
+                <Text>Date: {formatDate(invoice.issueDate as string)}</Text>
                 {invoice.dueDate && (
-                  <Text>Due Date: {formatDate(invoice.dueDate)}</Text>
+                  <Text>Due Date: {formatDate(invoice.dueDate as string)}</Text>
                 )}
               </View>
             </View>
