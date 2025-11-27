@@ -222,7 +222,7 @@ export function TemplateSelectionModal({
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex flex-col md:flex-row justify-end gap-3 pt-4 border-t">
             <Button
               variant="outline"
               onClick={onClose}

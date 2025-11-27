@@ -14,6 +14,7 @@ import { Trash2, Plus } from "lucide-react"
 import { ClientSelect } from "@/components/clients/client-select"
 import { formatCurrency } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 interface InvoiceItem {
   description: string
@@ -36,6 +37,9 @@ export function InvoiceForm({
   isLoading = false,
   clientId,
 }: InvoiceFormProps) {
+  const pathname = usePathname();
+  const isNewInvoice = pathname.split('/').includes('new')
+  
   const [items, setItems] = useState<InvoiceItem[]>(
     initialData?.items || [{ description: "", quantity: 1, unitPrice: 0 }]
   )
@@ -355,7 +359,7 @@ export function InvoiceForm({
                     {initialData ? "Updating..." : "Creating..."}
                   </>
                 ) : (
-                  initialData ? "Update Invoice" : "Create Invoice"
+                  isNewInvoice ? "Create Invoice" : "Update Invoice"
                 )}
               </Button>
             </div>
