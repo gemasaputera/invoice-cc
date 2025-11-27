@@ -40,17 +40,26 @@ export function InvoiceForm({
     initialData?.items || [{ description: "", quantity: 1, unitPrice: 0 }]
   )
 
+  // Helper function to format date for HTML input
+  const formatDateForInput = (date?: string | Date) => {
+    if (!date) return ""
+    const d = typeof date === 'string' ? new Date(date) : date
+    return d.toISOString().split('T')[0] // Returns YYYY-MM-DD format
+  }
+
   const form = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
       clientId: clientId || initialData?.clientId || "",
-      issueDate: initialData?.issueDate ? new Date(initialData.issueDate) : new Date(),
-      dueDate: initialData?.dueDate ? new Date(initialData.dueDate) : undefined,
+      issueDate: formatDateForInput(initialData?.issueDate) || formatDateForInput(new Date()),
+      dueDate: formatDateForInput(initialData?.dueDate),
       notes: initialData?.notes || "",
       taxRate: initialData?.taxRate || 0,
       items: items,
     },
   })
+
+  const { formState: { errors } } = form
 
   useEffect(() => {
     // Update form items when items state changes
@@ -92,6 +101,7 @@ export function InvoiceForm({
   }
 
   const handleSubmit = async (data: InvoiceFormData) => {
+    console.log('data', data)
     try {
       await onSubmit({
         ...data,
@@ -158,6 +168,11 @@ export function InvoiceForm({
                     placeholder="Service description"
                     disabled={isLoading}
                   />
+                  {form.formState.errors.items?.[index]?.description && (
+                    <p className="text-sm text-destructive mt-1">
+                      {form.formState.errors.items[index]?.description?.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor={`quantity-${index}`}>Quantity *</Label>
@@ -169,6 +184,11 @@ export function InvoiceForm({
                     min="1"
                     disabled={isLoading}
                   />
+                  {form.formState.errors.items?.[index]?.quantity && (
+                    <p className="text-sm text-destructive mt-1">
+                      {form.formState.errors.items[index]?.quantity?.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor={`price-${index}`}>Unit Price *</Label>
@@ -181,6 +201,11 @@ export function InvoiceForm({
                     step="0.01"
                     disabled={isLoading}
                   />
+                  {form.formState.errors.items?.[index]?.unitPrice && (
+                    <p className="text-sm text-destructive mt-1">
+                      {form.formState.errors.items[index]?.unitPrice?.message}
+                    </p>
+                  )}
                 </div>
                 <div className="flex gap-2 items-end">
                   <div className="flex-1">
@@ -219,18 +244,28 @@ export function InvoiceForm({
                   <Input
                     id="issueDate"
                     type="date"
-                    {...form.register("issueDate", { valueAsDate: true })}
+                    {...form.register("issueDate")}
                     disabled={isLoading}
                   />
+                  {form.formState.errors.issueDate && (
+                    <p className="text-sm text-destructive mt-1">
+                      {form.formState.errors.issueDate.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="dueDate">Due Date</Label>
                   <Input
                     id="dueDate"
                     type="date"
-                    {...form.register("dueDate", { valueAsDate: true })}
+                    {...form.register("dueDate")}
                     disabled={isLoading}
                   />
+                  {form.formState.errors.dueDate && (
+                    <p className="text-sm text-destructive mt-1">
+                      {form.formState.errors.dueDate.message}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
@@ -246,6 +281,11 @@ export function InvoiceForm({
                     {...form.register("taxRate", { valueAsNumber: true })}
                     disabled={isLoading}
                   />
+                  {form.formState.errors.taxRate && (
+                    <p className="text-sm text-destructive mt-1">
+                      {form.formState.errors.taxRate.message}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="space-y-2">
@@ -257,6 +297,11 @@ export function InvoiceForm({
                   {...form.register("notes")}
                   disabled={isLoading}
                 />
+                {form.formState.errors.notes && (
+                  <p className="text-sm text-destructive mt-1">
+                    {form.formState.errors.notes.message}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>

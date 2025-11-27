@@ -274,7 +274,7 @@ export default function InvoiceDetailPage() {
 
               {invoice.status === "DRAFT" && (
                 <Button
-                  onClick={() => router.push(`/invoices/${invoice.id}/edit`)}
+                  onClick={() => router.push(`/invoices/edit/${invoice.id}`)}
                 >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Invoice

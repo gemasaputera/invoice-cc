@@ -4,11 +4,13 @@ import { useState } from "react"
 import { AppLayout } from "@/components/layout/app-layout"
 import { AuthGuard } from "@/components/auth/auth-guard"
 import { InvoiceList } from "@/components/invoices/invoice-list"
-import { InvoiceForm } from "@/components/forms/invoice-form"
-import { InvoiceFormData } from "@/lib/validations"
+import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { toast } from "sonner"
+import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { InvoiceFormData } from "@/lib/validations"
+import { InvoiceForm } from "@/components/forms/invoice-form"
 
 interface Invoice {
   id: string
@@ -35,19 +37,17 @@ interface Invoice {
 }
 
 export default function InvoicesPage() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const router = useRouter()
 
   const handleInvoiceCreate = () => {
-    setIsCreateDialogOpen(true)
+    router.push('/invoices/new')
   }
 
   const handleInvoiceEdit = (invoice: Invoice) => {
-    setSelectedInvoice(invoice)
-    setIsEditDialogOpen(true)
+    router.push(`/invoices/edit/${invoice.id}`)
   }
 
   const handleInvoiceDelete = async (invoice: Invoice) => {
@@ -140,7 +140,6 @@ export default function InvoicesPage() {
       if (response.ok) {
         const createdInvoice = await response.json()
         toast.success(`Invoice ${isEdit ? "updated" : "created"} successfully`)
-        setIsCreateDialogOpen(false)
         setIsEditDialogOpen(false)
         setSelectedInvoice(null)
         setRefreshKey((prev) => prev + 1) // Trigger refresh
@@ -163,32 +162,22 @@ export default function InvoicesPage() {
     <AuthGuard>
       <AppLayout>
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2">
+          <div className="flex items-center justify-between">
             <h2 className="text-3xl font-bold tracking-tight">Invoices</h2>
+            <Button onClick={handleInvoiceCreate} className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              New Invoice
+            </Button>
           </div>
 
           <InvoiceList
             key={refreshKey} // Force re-render when refreshKey changes
-            onInvoiceCreate={handleInvoiceCreate}
             onInvoiceEdit={handleInvoiceEdit}
             onInvoiceDelete={handleInvoiceDelete}
             onInvoiceSelect={handleInvoiceSelect}
             onInvoiceDownload={handleInvoiceDownload}
             onInvoiceSend={handleInvoiceSend}
           />
-
-          {/* Create Invoice Dialog */}
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Create New Invoice</DialogTitle>
-              </DialogHeader>
-              <InvoiceForm
-                onSubmit={(data) => handleInvoiceSubmit(data, false)}
-                onCancel={() => setIsCreateDialogOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
 
           {/* Edit Invoice Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

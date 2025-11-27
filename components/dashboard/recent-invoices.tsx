@@ -141,15 +141,10 @@ export function RecentInvoices() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <p className="text-sm text-muted-foreground">
           Your most recent invoices
         </p>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/invoices">
-            View All
-          </Link>
-        </Button>
       </div>
 
       {/* Invoice List */}

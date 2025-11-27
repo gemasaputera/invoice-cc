@@ -132,8 +132,8 @@ export async function PUT(
         where: { id: id },
         data: {
           clientId: validatedData.clientId,
-          issueDate: validatedData.issueDate,
-          dueDate: validatedData.dueDate,
+          issueDate: new Date(validatedData.issueDate),
+          dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
           notes: validatedData.notes,
           taxRate: validatedData.taxRate,
           subtotal,

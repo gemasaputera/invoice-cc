@@ -28,7 +28,13 @@
       "Bash(npx tsc:*)",
       "Bash(timeout 15s npm run dev:*)",
       "Bash(lsof:*)",
-      "WebFetch(domain:developers.cloudflare.com)"
+      "WebFetch(domain:developers.cloudflare.com)",
+      "Bash(npm search:*)",
+      "Bash(kill:*)",
+      "Bash(rm:*)",
+      "Bash(echo:*)",
+      "Bash(npx prisma db execute:*)",
+      "Bash(xargs kill:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

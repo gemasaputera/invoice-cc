@@ -117,6 +117,7 @@ model Invoice {
   taxAmount       Decimal     @default(0)
   total           Decimal
   currency        String      @default("USD")
+  templateId      String?     // Optional template reference
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
@@ -139,6 +140,23 @@ model InvoiceItem {
   invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   @@map("invoice_items")
+}
+
+model InvoiceTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  previewUrl  String?  // URL to preview image
+  isDefault   Boolean  @default(false)
+  isSystem    Boolean  @default(true)  // System templates vs user templates
+  category    String   @default("professional") // professional, modern, minimalist, creative
+  styles      Json     // Template-specific styles (colors, fonts, layout)
+  sampleData  Json?    // Sample invoice data for pre-populating forms
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, category])
+  @@map("invoice_templates")
 }
 
 enum InvoiceStatus {

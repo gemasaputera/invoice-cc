@@ -114,6 +114,7 @@ export async function POST(request: NextRequest) {
           taxAmount,
           total,
           currency: user.defaultCurrency || 'IDR',
+          templateId: body.templateId || null,
           status: 'DRAFT',
         },
       })

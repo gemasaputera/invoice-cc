@@ -60,7 +60,6 @@ interface InvoiceListProps {
   onInvoiceDelete?: (invoice: Invoice) => void
   onInvoiceSend?: (invoice: Invoice) => void
   onInvoiceDownload?: (invoice: Invoice) => void
-  onInvoiceCreate?: () => void
   invoices?: Invoice[]
   searchTerm?: string
   statusFilter?: string
@@ -74,7 +73,6 @@ export function InvoiceList({
   onInvoiceDelete,
   onInvoiceSend,
   onInvoiceDownload,
-  onInvoiceCreate,
   invoices: externalInvoices = [],
   searchTerm: externalSearchTerm,
   statusFilter: externalStatusFilter,
@@ -207,11 +205,6 @@ export function InvoiceList({
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <CardTitle className="text-lg sm:text-xl">Invoices</CardTitle>
-          <Button onClick={onInvoiceCreate} className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">New Invoice</span>
-            <span className="sm:hidden">New</span>
-          </Button>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2">
@@ -259,10 +252,6 @@ export function InvoiceList({
                 <>
                   <p>No invoices yet</p>
                   <p className="text-sm">Create your first invoice to get started</p>
-                  <Button className="mt-4" onClick={onInvoiceCreate}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Invoice
-                  </Button>
                 </>
               )}
             </div>
