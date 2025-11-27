@@ -243,9 +243,9 @@ export function ModernPDF({ invoice, client, user, items }: InvoicePDFProps) {
               <View style={styles.invoiceInfo}>
                 <Text>Invoice #: {invoice.invoiceNumber}</Text>
                 <Text>Status: {invoice.status}</Text>
-                <Text>Date: {formatDate(invoice.issueDate)}</Text>
+                <Text>Date: {formatDate(invoice.issueDate as string)}</Text>
                 {invoice.dueDate && (
-                  <Text>Due: {formatDate(invoice.dueDate)}</Text>
+                  <Text>Due: {formatDate(invoice.dueDate as string)}</Text>
                 )}
               </View>
             </View>
