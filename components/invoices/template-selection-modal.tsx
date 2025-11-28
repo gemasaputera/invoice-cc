@@ -8,12 +8,8 @@ import { Badge } from '@/components/ui/badge'
 import { Loader2, Check, Sparkles, Briefcase, Minimize, Palette } from 'lucide-react'
 import { toast } from 'sonner'
 
-// Analytics helper
-declare global {
-  interface Window {
-    umami?: (event: string, data?: any) => void;
-  }
-}
+
+
 
 const trackEvent = (event: string, data?: any) => {
   if (typeof window !== 'undefined' && window.umami) {
@@ -89,13 +85,23 @@ export function TemplateSelectionModal({
   const handleSelectTemplate = () => {
     if (selectedTemplate) {
       // Track template selection
-      trackEvent("template-select", {
-        templateId: selectedTemplate.id,
-        templateName: selectedTemplate.name,
-        templateCategory: selectedTemplate.category,
-        isDefault: selectedTemplate.isDefault,
-        timestamp: new Date().toISOString()
-      });
+      if (selectedTemplate === 'blank') {
+        trackEvent("template-select", {
+          templateId: 'blank',
+          templateName: 'Blank',
+          templateCategory: 'blank',
+          isDefault: false,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        trackEvent("template-select", {
+          templateId: selectedTemplate.id,
+          templateName: selectedTemplate.name,
+          templateCategory: selectedTemplate.category,
+          isDefault: selectedTemplate.isDefault,
+          timestamp: new Date().toISOString()
+        });
+      }
 
       onSelectTemplate(selectedTemplate)
       // onClose()

@@ -9,19 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useSession } from "@/lib/auth-client"
-import { signIn } from "@/lib/auth-client"
+import { signIn, useSession } from "@/lib/auth-client"
 import { z } from "zod"
 import { authSchema } from "@/lib/validations"
 import { toast } from "sonner"
 import { getAuthErrorMessage } from "@/lib/utils"
 
-// Analytics helper
-declare global {
-  interface Window {
-    umami?: (event: string, data?: any) => void;
-  }
-}
+
 
 const trackEvent = (event: string, data?: any) => {
   if (typeof window !== 'undefined' && window.umami) {

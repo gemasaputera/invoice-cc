@@ -1,33 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, FileText, Users } from "lucide-react"
-import { useEffect } from "react"
 import { AppLayout } from "@/components/layout/app-layout"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { RecentInvoices } from "@/components/dashboard/recent-invoices"
 import { AuthGuard } from "@/components/auth/auth-guard"
 import Link from "next/link"
 
-// Analytics helper
-declare global {
-  interface Window {
-    umami?: (event: string, data?: any) => void;
-  }
-}
-
-const trackEvent = (event: string, data?: any) => {
-  if (typeof window !== 'undefined' && window.umami) {
-    window.umami(event, data)
-  }
-}
 
 export default function DashboardPage() {
-  // Track dashboard view
-  useEffect(() => {
-    trackEvent("dashboard-view", {
-      timestamp: new Date().toISOString()
-    });
-  }, []);
   return (
     <AuthGuard>
       <AppLayout>

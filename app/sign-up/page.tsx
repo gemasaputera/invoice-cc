@@ -15,12 +15,8 @@ import { registerSchema } from "@/lib/validations"
 import { toast } from "sonner"
 import { getAuthErrorMessage } from "@/lib/utils"
 
-// Analytics helper
-declare global {
-  interface Window {
-    umami?: (event: string, data?: any) => void;
-  }
-}
+
+
 
 const trackEvent = (event: string, data?: any) => {
   if (typeof window !== 'undefined' && window.umami) {

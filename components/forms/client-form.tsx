@@ -12,12 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
-// Analytics helper
-declare global {
-  interface Window {
-    umami?: (event: string, data?: any) => void;
-  }
-}
+
+
 
 const trackEvent = (event: string, data?: any) => {
   if (typeof window !== 'undefined' && window.umami) {
@@ -80,7 +76,7 @@ export function ClientForm({
       trackEvent("client-form-failed", {
         isEdit: !!initialData,
         clientName: data.name,
-        error: error?.message || "Unknown error",
+        error: error ? JSON.stringify(error) : "Unknown error",
         timestamp: new Date().toISOString()
       });
     }

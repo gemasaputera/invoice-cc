@@ -16,12 +16,8 @@ import { formatCurrency } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
 import { usePathname } from "next/navigation"
 
-// Analytics helper
-declare global {
-  interface Window {
-    umami?: (event: string, data?: any) => void;
-  }
-}
+
+
 
 const trackEvent = (event: string, data?: any) => {
   if (typeof window !== 'undefined' && window.umami) {
@@ -148,7 +144,7 @@ export function InvoiceForm({
       // Track invoice creation failure
       trackEvent("invoice-create-failed", {
         itemCount: items.length,
-        error: error?.message || 'Unknown error',
+        error: error ? JSON.stringify(error) : "Unknown error",
         isNewInvoice: isNewInvoice,
         timestamp: new Date().toISOString()
       });

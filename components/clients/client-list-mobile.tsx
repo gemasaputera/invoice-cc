@@ -24,12 +24,8 @@ import { Search, Plus, MoreHorizontal, Edit, Trash2, Eye, Building, Mail, Phone,
 import { formatDate, formatCurrency } from "@/lib/utils"
 import Link from "next/link"
 
-// Analytics helper
-declare global {
-  interface Window {
-    umami?: (event: string, data?: any) => void;
-  }
-}
+
+
 
 const trackEvent = (event: string, data?: any) => {
   if (typeof window !== 'undefined' && window.umami) {
@@ -133,7 +129,7 @@ export function ClientList({
       // Track client delete error
       trackEvent("client-delete-error", {
         clientName: client.name,
-        error: error?.message || "Unknown error",
+        error: error ? JSON.stringify(error) : "Unknown error",
         timestamp: new Date().toISOString()
       });
     }

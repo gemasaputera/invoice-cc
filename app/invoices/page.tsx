@@ -12,12 +12,6 @@ import { toast } from "sonner"
 import { InvoiceFormData } from "@/lib/validations"
 import { InvoiceForm } from "@/components/forms/invoice-form"
 
-// Analytics helper
-declare global {
-  interface Window {
-    umami?: (event: string, data?: any) => void;
-  }
-}
 
 const trackEvent = (event: string, data?: any) => {
   if (typeof window !== 'undefined' && window.umami) {
@@ -111,7 +105,7 @@ export default function InvoicesPage() {
 
       // Track invoice delete error
       trackEvent("invoice-delete-error", {
-        error: error?.message || "Unknown error",
+        error: error ? JSON.stringify(error) : "Unknown error",
         timestamp: new Date().toISOString()
       });
     }
@@ -178,7 +172,7 @@ export default function InvoicesPage() {
       // Track PDF download error
       trackEvent("invoice-download-error", {
         invoiceNumber: invoice.invoiceNumber,
-        error: error?.message || "Unknown error",
+        error: error ? JSON.stringify(error) : "Unknown error",
         timestamp: new Date().toISOString()
       });
     }
@@ -230,7 +224,7 @@ export default function InvoicesPage() {
 
       // Track invoice send error
       trackEvent("invoice-send-error", {
-        error: error?.message || "Unknown error",
+        error: error ? JSON.stringify(error) : "Unknown error",
         timestamp: new Date().toISOString()
       });
     }
