@@ -24,6 +24,19 @@ import { Search, Plus, MoreHorizontal, Edit, Trash2, Eye, Building, Mail, Phone,
 import { formatDate, formatCurrency } from "@/lib/utils"
 import Link from "next/link"
 
+// Analytics helper
+declare global {
+  interface Window {
+    umami?: (event: string, data?: any) => void;
+  }
+}
+
+const trackEvent = (event: string, data?: any) => {
+  if (typeof window !== 'undefined' && window.umami) {
+    window.umami(event, data)
+  }
+}
+
 interface Client {
   id: string
   name: string
@@ -81,6 +94,14 @@ export function ClientList({
     }
 
     try {
+      // Track client delete attempt
+      trackEvent("client-delete-attempt", {
+        clientName: client.name,
+        clientEmail: client.email,
+        hasInvoices: client._count?.invoices > 0,
+        timestamp: new Date().toISOString()
+      });
+
       const response = await fetch(`/api/clients/${client.id}`, {
         method: "DELETE",
       })
@@ -88,11 +109,33 @@ export function ClientList({
       if (response.ok) {
         setClients(clients.filter((c) => c.id !== client.id))
         onClientDelete?.(client)
+
+        // Track successful client delete
+        trackEvent("client-delete-success", {
+          clientName: client.name,
+          clientEmail: client.email,
+          hadInvoices: client._count?.invoices > 0,
+          timestamp: new Date().toISOString()
+        });
       } else {
         console.error("Failed to delete client")
+
+        // Track client delete failure
+        trackEvent("client-delete-failed", {
+          clientName: client.name,
+          error: "API error",
+          timestamp: new Date().toISOString()
+        });
       }
     } catch (error) {
       console.error("Error deleting client:", error)
+
+      // Track client delete error
+      trackEvent("client-delete-error", {
+        clientName: client.name,
+        error: error?.message || "Unknown error",
+        timestamp: new Date().toISOString()
+      });
     }
   }
 

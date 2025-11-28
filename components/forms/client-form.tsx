@@ -12,6 +12,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
+// Analytics helper
+declare global {
+  interface Window {
+    umami?: (event: string, data?: any) => void;
+  }
+}
+
+const trackEvent = (event: string, data?: any) => {
+  if (typeof window !== 'undefined' && window.umami) {
+    window.umami(event, data)
+  }
+}
+
 interface ClientFormProps {
   initialData?: Partial<ClientFormData>
   onSubmit: (data: ClientFormData) => Promise<void>
@@ -39,9 +52,37 @@ export function ClientForm({
 
   const handleSubmit = async (data: ClientFormData) => {
     try {
+      // Track client creation/edit attempt
+      trackEvent("client-form-submit", {
+        isEdit: !!initialData,
+        clientName: data.name,
+        hasEmail: !!data.email,
+        hasPhone: !!data.phone,
+        hasCompany: !!data.company,
+        timestamp: new Date().toISOString()
+      });
+
       await onSubmit(data)
+
+      // Track successful client creation/edit
+      trackEvent("client-form-success", {
+        isEdit: !!initialData,
+        clientName: data.name,
+        hasEmail: !!data.email,
+        hasPhone: !!data.phone,
+        hasCompany: !!data.company,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
       console.error("Submit error:", error)
+
+      // Track client form error
+      trackEvent("client-form-failed", {
+        isEdit: !!initialData,
+        clientName: data.name,
+        error: error?.message || "Unknown error",
+        timestamp: new Date().toISOString()
+      });
     }
   }
 

@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "sonner";
+import UmamiAnalytics from "@/components/analytics/umami-analytics";
 
 export const metadata: Metadata = {
   title: "InvoiceHub - Invoice Management System",
@@ -27,6 +28,7 @@ export default function RootLayout({
             {children}
           </AuthProvider>
         </ThemeProvider>
+        <UmamiAnalytics />
         <Toaster />
       </body>
     </html>

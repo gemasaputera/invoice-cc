@@ -16,6 +16,19 @@ import { authSchema } from "@/lib/validations"
 import { toast } from "sonner"
 import { getAuthErrorMessage } from "@/lib/utils"
 
+// Analytics helper
+declare global {
+  interface Window {
+    umami?: (event: string, data?: any) => void;
+  }
+}
+
+const trackEvent = (event: string, data?: any) => {
+  if (typeof window !== 'undefined' && window.umami) {
+    window.umami(event, data)
+  }
+}
+
 export default function SignInPage() {
   const { data: session } = useSession()
   const router = useRouter()
@@ -44,6 +57,12 @@ export default function SignInPage() {
 
       // Check if authentication was successful
       if (result.data) {
+        // Track successful login
+        trackEvent("login-submit", {
+          email: validatedData.email,
+          timestamp: new Date().toISOString()
+        });
+
         toast.success("Signed in successfully!")
 
         // Wait a moment for the session to be properly set
@@ -56,6 +75,13 @@ export default function SignInPage() {
         setErrors({ general: errorMessage })
         toast.error(errorMessage)
         console.error("Authentication failed:", result.error)
+
+        // Track failed login attempt
+        trackEvent("login-failed", {
+          email: validatedData.email,
+          error: result.error?.message || 'Unknown error',
+          timestamp: new Date().toISOString()
+        })
       }
     } catch (error) {
       if (error instanceof z.ZodError && error.issues) {

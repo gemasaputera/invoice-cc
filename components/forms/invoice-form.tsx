@@ -16,6 +16,19 @@ import { formatCurrency } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
 import { usePathname } from "next/navigation"
 
+// Analytics helper
+declare global {
+  interface Window {
+    umami?: (event: string, data?: any) => void;
+  }
+}
+
+const trackEvent = (event: string, data?: any) => {
+  if (typeof window !== 'undefined' && window.umami) {
+    window.umami(event, data)
+  }
+}
+
 interface InvoiceItem {
   description: string
   quantity: number
@@ -107,12 +120,38 @@ export function InvoiceForm({
   const handleSubmit = async (data: InvoiceFormData) => {
     console.log('data', data)
     try {
+      // Track invoice creation attempt
+      trackEvent("invoice-create-attempt", {
+        itemCount: items.length,
+        subtotal: calculateSubtotal(),
+        hasTaxRate: (data.taxRate || 0) > 0,
+        isNewInvoice: isNewInvoice,
+        timestamp: new Date().toISOString()
+      });
+
       await onSubmit({
         ...data,
         items,
       })
+
+      // Track successful invoice creation
+      trackEvent("invoice-create-success", {
+        itemCount: items.length,
+        total: calculateTotal(),
+        hasTaxRate: (data.taxRate || 0) > 0,
+        isNewInvoice: isNewInvoice,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
       console.error("Submit error:", error)
+
+      // Track invoice creation failure
+      trackEvent("invoice-create-failed", {
+        itemCount: items.length,
+        error: error?.message || 'Unknown error',
+        isNewInvoice: isNewInvoice,
+        timestamp: new Date().toISOString()
+      });
     }
   }
 

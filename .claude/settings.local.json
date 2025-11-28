@@ -34,7 +34,8 @@
       "Bash(rm:*)",
       "Bash(echo:*)",
       "Bash(npx prisma db execute:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "WebFetch(domain:invoice-cc.netlify.app)"
     ]
   },
   "enableAllProjectMcpServers": true,

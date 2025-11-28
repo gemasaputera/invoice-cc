@@ -9,12 +9,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useSession } from "@/lib/auth-client"
-import { signUp } from "@/lib/auth-client"
+import { signUp, useSession } from "@/lib/auth-client"
 import { z } from "zod"
 import { registerSchema } from "@/lib/validations"
 import { toast } from "sonner"
 import { getAuthErrorMessage } from "@/lib/utils"
+
+// Analytics helper
+declare global {
+  interface Window {
+    umami?: (event: string, data?: any) => void;
+  }
+}
+
+const trackEvent = (event: string, data?: any) => {
+  if (typeof window !== 'undefined' && window.umami) {
+    window.umami(event, data)
+  }
+}
 
 export default function SignUpPage() {
   const { data: session } = useSession()
@@ -50,6 +62,13 @@ export default function SignUpPage() {
 
       // Check if registration was successful
       if (result.data) {
+        // Track successful registration
+        trackEvent("register-submit", {
+          email: validatedData.email,
+          name: validatedData.name,
+          timestamp: new Date().toISOString()
+        });
+
         toast.success("Account created successfully! You can now sign in.")
 
         // Wait a moment before redirecting

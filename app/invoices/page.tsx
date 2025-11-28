@@ -12,6 +12,19 @@ import { toast } from "sonner"
 import { InvoiceFormData } from "@/lib/validations"
 import { InvoiceForm } from "@/components/forms/invoice-form"
 
+// Analytics helper
+declare global {
+  interface Window {
+    umami?: (event: string, data?: any) => void;
+  }
+}
+
+const trackEvent = (event: string, data?: any) => {
+  if (typeof window !== 'undefined' && window.umami) {
+    window.umami(event, data)
+  }
+}
+
 interface Invoice {
   id: string
   invoiceNumber: string
@@ -56,6 +69,15 @@ export default function InvoicesPage() {
     }
 
     try {
+      // Track invoice delete attempt
+      trackEvent("invoice-delete-attempt", {
+        invoiceNumber: invoice.invoiceNumber,
+        clientName: invoice.client.name,
+        total: invoice.total,
+        status: invoice.status,
+        timestamp: new Date().toISOString()
+      });
+
       const response = await fetch(`/api/invoices/${invoice.id}`, {
         method: "DELETE",
       })
@@ -63,22 +85,61 @@ export default function InvoicesPage() {
       if (response.ok) {
         toast.success("Invoice deleted successfully")
         setRefreshKey((prev) => prev + 1) // Trigger refresh
+
+        // Track successful invoice delete
+        trackEvent("invoice-delete-success", {
+          invoiceNumber: invoice.invoiceNumber,
+          clientName: invoice.client.name,
+          total: invoice.total,
+          status: invoice.status,
+          timestamp: new Date().toISOString()
+        });
       } else {
         const error = await response.json()
         toast.error(error.error || "Failed to delete invoice")
+
+        // Track invoice delete failure
+        trackEvent("invoice-delete-failed", {
+          invoiceNumber: invoice.invoiceNumber,
+          error: error.error || "Unknown error",
+          timestamp: new Date().toISOString()
+        });
       }
     } catch (error) {
       console.error("Error deleting invoice:", error)
       toast.error("Failed to delete invoice")
+
+      // Track invoice delete error
+      trackEvent("invoice-delete-error", {
+        error: error?.message || "Unknown error",
+        timestamp: new Date().toISOString()
+      });
     }
   }
 
   const handleInvoiceSelect = (invoice: Invoice) => {
+    // Track invoice view
+    trackEvent("invoice-view", {
+      invoiceNumber: invoice.invoiceNumber,
+      clientName: invoice.client.name,
+      total: invoice.total,
+      status: invoice.status,
+      timestamp: new Date().toISOString()
+    });
+
     router.push(`/invoices/${invoice.id}`)
   }
 
   const handleInvoiceDownload = async (invoice: Invoice) => {
     try {
+      // Track PDF download attempt
+      trackEvent("invoice-download-attempt", {
+        invoiceNumber: invoice.invoiceNumber,
+        invoiceTotal: invoice.total,
+        clientName: invoice.client.name,
+        timestamp: new Date().toISOString()
+      });
+
       const response = await fetch(`/api/invoices/${invoice.id}/pdf`)
       if (response.ok) {
         const blob = await response.blob()
@@ -91,18 +152,48 @@ export default function InvoicesPage() {
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
         toast.success("PDF downloaded successfully")
+
+        // Track successful PDF download
+        trackEvent("invoice-download-success", {
+          invoiceNumber: invoice.invoiceNumber,
+          invoiceTotal: invoice.total,
+          clientName: invoice.client.name,
+          timestamp: new Date().toISOString()
+        });
       } else {
         const error = await response.json()
         toast.error(error.error || "Failed to download PDF")
+
+        // Track PDF download failure
+        trackEvent("invoice-download-failed", {
+          invoiceNumber: invoice.invoiceNumber,
+          error: error.error || "Unknown error",
+          timestamp: new Date().toISOString()
+        });
       }
     } catch (error) {
       console.error("Error downloading PDF:", error)
       toast.error("Failed to download PDF")
+
+      // Track PDF download error
+      trackEvent("invoice-download-error", {
+        invoiceNumber: invoice.invoiceNumber,
+        error: error?.message || "Unknown error",
+        timestamp: new Date().toISOString()
+      });
     }
   }
 
   const handleInvoiceSend = async (invoice: Invoice) => {
     try {
+      // Track invoice send attempt
+      trackEvent("invoice-send-attempt", {
+        invoiceNumber: invoice.invoiceNumber,
+        clientName: invoice.client.name,
+        total: invoice.total,
+        timestamp: new Date().toISOString()
+      });
+
       const response = await fetch(`/api/invoices/${invoice.id}/status`, {
         method: "PATCH",
         headers: {
@@ -114,13 +205,34 @@ export default function InvoicesPage() {
       if (response.ok) {
         toast.success(`Invoice #${invoice.invoiceNumber} marked as sent`)
         setRefreshKey((prev) => prev + 1) // Trigger refresh
+
+        // Track successful invoice send
+        trackEvent("invoice-send-success", {
+          invoiceNumber: invoice.invoiceNumber,
+          clientName: invoice.client.name,
+          total: invoice.total,
+          timestamp: new Date().toISOString()
+        });
       } else {
         const error = await response.json()
         toast.error(error.error || "Failed to update invoice status")
+
+        // Track invoice send failure
+        trackEvent("invoice-send-failed", {
+          invoiceNumber: invoice.invoiceNumber,
+          error: error.error || "Unknown error",
+          timestamp: new Date().toISOString()
+        });
       }
     } catch (error) {
       console.error("Error updating invoice status:", error)
       toast.error("Failed to update invoice status")
+
+      // Track invoice send error
+      trackEvent("invoice-send-error", {
+        error: error?.message || "Unknown error",
+        timestamp: new Date().toISOString()
+      });
     }
   }
 
